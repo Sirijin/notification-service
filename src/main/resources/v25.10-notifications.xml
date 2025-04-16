@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+  https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+  <changeSet author="sup-notification-service" id="v25.10-notifications" failOnError="false">
+
+    <insert tableName="NOTIFICATION">
+      <column name="RESOURCE_TYPE" value="" />
+      <column name="OPERATION" value="" />
+      <column name="TITLE" value="абс" />
+      <column name="BODY" value="двг&#xa;&#xd;фыа" />
+      <column name="RELEASE_VERSION" value="25.10" />
+    </insert>
+  </changeSet>
+</databaseChangeLog>

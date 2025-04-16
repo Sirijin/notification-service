@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Создание уведомлений</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen py-8 px-4">
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+    <h1 class="text-2xl font-bold mb-6">Создание уведомлений</h1>
+
+    <!-- Версия релиза -->
+    <div class="mb-6">
+        <label for="releaseVersion" class="block text-sm font-medium text-gray-700 mb-1">Версия релиза</label>
+        <input
+                type="text"
+                id="releaseVersion"
+                placeholder="например, 25.1"
+                class="w-full p-2 border rounded"
+        />
+    </div>
+
+    <!-- Контейнер для уведомлений -->
+    <div id="notificationsContainer" class="space-y-6">
+        <!-- Один блок уведомления (будет клонироваться) -->
+        <div class="notification-block bg-gray-50 p-4 rounded-lg shadow-inner">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Заголовок уведомления</label>
+                <input type="text" class="title-input w-full p-2 border rounded" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Тело уведомления</label>
+                <textarea class="body-input w-full p-2 border rounded" rows="6"></textarea>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">ID операции (необязательно)</label>
+                <input type="text" class="operation-input w-full p-2 border rounded" />
+            </div>
+            <!-- Новое поле для ID объекта -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-1">ID объекта (необязательно)</label>
+                <input type="text" class="resource-type-input w-full p-2 border rounded" />
+            </div>
+            <!-- Кнопка удаления (красный крестик) -->
+            <button onclick="removeNotification(this)" class="delete-btn text-red-500 hover:text-red-700 mt-2" style="display: none;">&times;</button>
+        </div>
+    </div>
+
+    <!-- Кнопки -->
+    <div class="mt-6 flex space-x-4">
+        <button onclick="addNotification()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            Добавить уведомление
+        </button>
+        <button onclick="downloadXml()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            Сохранить XML
+        </button>
+    </div>
+</div>
+
+<script>
+    // Добавляем уведомление
+    function addNotification() {
+        const container = document.getElementById("notificationsContainer");
+        const firstBlock = container.querySelector(".notification-block");
+
+        // Если в контейнере нет блоков уведомлений, ничего не добавляем
+        if (!firstBlock) return;
+
+        const newBlock = firstBlock.cloneNode(true);
+
+        newBlock.querySelector(".title-input").value = "";
+        newBlock.querySelector(".body-input").value = "";
+        newBlock.querySelector(".operation-input").value = "";
+        newBlock.querySelector(".resource-type-input").value = "";
+
+        // Отображаем кнопку удаления, кроме первого уведомления
+        const deleteBtn = newBlock.querySelector(".delete-btn");
+        deleteBtn.style.display = "inline-block";
+
+        container.appendChild(newBlock);
+    }
+
+    // Удаляем уведомление
+    function removeNotification(button) {
+        const notificationBlock = button.closest('.notification-block');
+        notificationBlock.remove();
+
+        // Если все уведомления удалены, добавляем новый блок-шаблон.
+        const container = document.getElementById("notificationsContainer");
+        if (container.children.length === 0) {
+            addNotification();  // Добавляем новый блок как шаблон
+        }
+
+        // Проверяем, если удалено последнее уведомление, показываем кнопку "Добавить уведомление"
+        if (container.children.length === 1) {
+            const firstNotification = container.querySelector('.notification-block');
+            firstNotification.querySelector('.delete-btn').style.display = "none"; // Убираем кнопку удаления на первом уведомлении
+        }
+    }
+
+    // Функция для экранирования специальных символов для XML
+    function escapeXml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/\r?\n/g, "&#xa;&#xd;"); // Экранируем переносы строк
+    }
+
+    // Скачать XML
+    function downloadXml() {
+        const notifications = [...document.querySelectorAll('.notification-block')].map(block => {
+            return {
+                title: block.querySelector('.title-input').value.trim(),
+                body: block.querySelector('.body-input').value.trim(),
+                operation: block.querySelector('.operation-input').value.trim(),
+                resourceType: block.querySelector('.resource-type-input').value.trim()
+            };
+        });
+
+        const releaseVersion = document.getElementById('releaseVersion').value.trim();
+        if (!releaseVersion) {
+            alert('Пожалуйста, укажите версию релиза');
+            return;
+        }
+
+        const xmlHeader = `<?xml version="1.0" encoding="utf-8"?>\n<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+  https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">\n`;
+
+        const xmlFooter = "</databaseChangeLog>";
+
+        const changeSetStart = `  <changeSet author="sup-notification-service" id="v${releaseVersion}-notifications" failOnError="false">\n`;
+        const changeSetEnd = `  </changeSet>\n`;
+
+        const inserts = notifications.map(n => `
+    <insert tableName="NOTIFICATION">
+      <column name="RESOURCE_TYPE" value="${escapeXml(n.resourceType)}" />
+      <column name="OPERATION" value="${escapeXml(n.operation)}" />
+      <column name="TITLE" value="${escapeXml(n.title)}" />
+      <column name="BODY" value="${escapeXml(n.body)}" />
+      <column name="RELEASE_VERSION" value="${releaseVersion}" />
+    </insert>`).join('\n');
+
+        const xml = `${xmlHeader}${changeSetStart}${inserts}\n${changeSetEnd}${xmlFooter}`;
+
+        const blob = new Blob([xml], { type: 'application/xml' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `v${releaseVersion}-notifications.xml`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Добавить начальный блок, если страница только что загружена
+    window.onload = function() {
+        const container = document.getElementById("notificationsContainer");
+        if (container.children.length === 0) {
+            addNotification();  // Добавляем блок уведомления
+        }
+    };
+</script>
+</body>
+</html>

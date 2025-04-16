@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+  https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet author="sup-notification-service" id="v25.6-notifications" failOnError="false">
+
+        <insert tableName="NOTIFICATION">
+            <column name="RESOURCE_TYPE" value="..."/>
+            <column name="OPERATION" value=""/>
+            <column name="TITLE" value="уведомление 1"/>
+            <column name="BODY" value="текст 1&#xa;&#xd;123&quot;&#xa;&#xd;&lt;абс&gt;"/>
+            <column name="RELEASE_VERSION" value="25.6"/>
+        </insert>
+
+        <insert tableName="NOTIFICATION">
+            <column name="RESOURCE_TYPE" value="..."/>
+            <column name="OPERATION" value=""/>
+            <column name="TITLE" value="уведомление 2"/>
+            <column name="BODY" value="31456"/>
+            <column name="RELEASE_VERSION" value="25.6"/>
+        </insert>
+
+        <insert tableName="NOTIFICATION">
+            <column name="RESOURCE_TYPE" value="..."/>
+            <column name="OPERATION" value="12354"/>
+            <column name="TITLE" value="уведомление 3"/>
+            <column name="BODY" value="1234631"/>
+            <column name="RELEASE_VERSION" value="25.6"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
