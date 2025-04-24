@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <databaseChangeLog
-  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-  https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
-  <changeSet author="sup-notification-service" id="v123456787-notifications" failOnError="false">
-    <insert tableName="NOTIFICATION">
-      <column name="RESOURCE_TYPE" value=""/>
-      <column name="OPERATION" value="1234"/>
-      <column name="TITLE" value="534"/>
-      <column name="BODY" value="ыва&#xa;&#xd;&quot;кек&quot;&#xa;&#xd;&lt;лулу&gt;"/>
-      <column name="RELEASE_VERSION" value="123456787"/>
-    </insert>
-  </changeSet>
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+    <changeSet author="sup-notification-service" id="v123456787-notifications" failOnError="false">
+        <insert tableName="NOTIFICATION">
+            <column name="RESOURCE_TYPE" value=""/>
+            <column name="OPERATION" value="1234"/>
+            <column name="TITLE" value="534"/>
+            <column name="BODY" value="ыва&#xa;&#xd;&quot;кек&quot;&#xa;&#xd;&lt;лулу&gt;"/>
+            <column name="RELEASE_VERSION" value="123456787"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
